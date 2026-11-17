@@ -9,6 +9,7 @@
     "dev:server": "tsx watch server/index.ts",
     "dev:client": "vite",
     "build": "tsc --noEmit && vite build",
+    "build:gh-pages": "tsc --noEmit && vite build --mode gh-pages",
     "start": "npm run build && tsx server/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --config vitest.config.ts",

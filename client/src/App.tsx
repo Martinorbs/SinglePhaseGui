@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Settings, Wifi, WifiOff, X } from 'lucide-react';
 import { useLiveState } from './useLiveState';
+import { isStatic } from './dataSource';
 import { Hero } from './components/Hero';
 import { SimControls } from './components/SimControls';
 import { ApplianceSections } from './components/ApplianceSections';
@@ -62,7 +63,7 @@ export default function App() {
           </div>
           <p className="mt-0.5 text-[11px] text-stone-500">
             1×{config.settings.voltage} V · {config.settings.mainFuseA} A
-            hoofdzekering · lokaal op je netwerk
+            hoofdzekering · {isStatic ? 'in je browser' : 'lokaal op je netwerk'}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">

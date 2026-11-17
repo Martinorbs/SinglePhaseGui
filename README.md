@@ -1,8 +1,9 @@
 # Stroombalans
 
 Stroombalans is een Nederlandstalige simulator voor huishoudelijke stroom op een
-eenfasige **230 V / 35 A** aansluiting. De app draait lokaal op een Node-server en
-is te gebruiken vanaf een iPhone op hetzelfde Wi-Fi-netwerk.
+eenfasige **230 V / 35 A** aansluiting. De app kan lokaal op een Node-server
+draaien of als statische site op GitHub Pages, waarbij de simulatie en opslag
+volledig in de browser lopen.
 
 ## Functies
 
@@ -40,6 +41,30 @@ poort 3000 toe in Windows Firewall.
 De server heeft geen authenticatie en is bedoeld voor gebruik op een vertrouwd
 lokaal netwerk. Zet hem niet rechtstreeks op het internet.
 
+## GitHub Pages
+
+De statische build gebruikt geen API of server: de simulatie-engine draait in de
+browser en bewaren van configuratie en toestand gebeurt in `localStorage` van de
+browser. Iedere bezoeker heeft daardoor een eigen, lokale simulatietoestand.
+
+1. Zet de repository op GitHub en maak in **Settings → Pages** de source
+   **GitHub Actions**.
+2. Push naar `main` of `master`. De workflow
+   `.github/workflows/deploy.yml` bouwt `dist/client` met
+   `npm run build:gh-pages` en publiceert die map.
+3. De base URL wordt automatisch afgeleid uit `GITHUB_REPOSITORY`, dus een site
+   op `https://<gebruiker>.github.io/<repo>/` werkt zonder extra instellingen.
+
+Voor een handmatige lokale test van de statische build:
+
+```powershell
+$env:GITHUB_REPOSITORY = '<gebruiker>/<repo>'
+npm run build:gh-pages
+```
+
+Daarna kun je `dist/client` met een willekeurige static file server openen. De
+gewone `npm run build` blijft de versie voor de lokale Node-server maken.
+
 ## Ontwikkelen
 
 ```powershell
@@ -55,7 +80,8 @@ Vite-ontwikkelserver stuurt `/api`-verzoeken door naar de API.
 | --- | --- |
 | `npm run dev` | Server en client met hot reload |
 | `npm start` | Productie-build maken en server starten |
-| `npm run build` | Typecheck en client-build |
+| `npm run build` | Typecheck en client-build voor de lokale server |
+| `npm run build:gh-pages` | Statische build met project-base-url voor GitHub Pages |
 | `npm run typecheck` | TypeScript controleren |
 | `npm run lint` | ESLint uitvoeren |
 | `npm test` | Unit-tests uitvoeren |
@@ -96,6 +122,10 @@ alles** in de instellingen gebruiken.
 
 De map `data/` staat in `.gitignore`.
 
+In de GitHub Pages-versie worden dezelfde gegevens bewaard onder de
+`localStorage`-sleutel `stroombalans.v1`. De serverbestanden en de map `data/`
+worden dan niet gebruikt.
+
 ## Modellering
 
 - Apparent vermogen wordt berekend als `W / PF`; de stroom is leidend.
@@ -132,4 +162,5 @@ server/     Express-API, SSE-stream, persistentie en simulatie-engine
 client/     React-dashboard, componenten en styling
 tests/      Vitest unit-tests
 data/       Lokale configuratie en simulatetoestand (niet in git)
+.github/    GitHub Actions workflow voor GitHub Pages
 ```

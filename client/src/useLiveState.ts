@@ -7,7 +7,8 @@ import type {
   HistoryPoint,
   Snapshot
 } from '../../shared/types';
-import { api, type SimulationAction } from './api';
+import { type SimulationAction } from './api';
+import { api } from './dataSource';
 
 interface LiveState {
   config: AppConfig | null;
@@ -80,17 +81,9 @@ export function useLiveState(): LiveState {
         }
       });
 
-    const source = new EventSource('/api/stream');
-    source.addEventListener('open', () => setConnected(true));
-    source.addEventListener('error', () => setConnected(false));
-    source.addEventListener('tick', (event) => {
-      try {
-        const next = JSON.parse((event as MessageEvent).data) as Snapshot;
-        setSnapshot(next);
-        setConnected(true);
-      } catch {
-        // ignore malformed tick
-      }
+    const closeStream = api.stream({
+      onTick: (next) => setSnapshot(next),
+      onConnected: setConnected
     });
 
     const onVisibility = (): void => {
@@ -105,7 +98,7 @@ export function useLiveState(): LiveState {
 
     return () => {
       cancelled = true;
-      source.close();
+      closeStream();
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
