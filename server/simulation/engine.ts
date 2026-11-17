@@ -775,12 +775,13 @@ export class SimulationEngine {
       case 'induction': {
         const zones = Array.isArray(p.zones) ? p.zones : [];
         const total = zones.reduce(
-          (sum, zone) => sum + this.num(zone.maxW, 0),
+          (sum, zone) =>
+            sum +
+            (clamp(this.num(zone.level, 0), 0, 10) / 10) *
+              this.num(zone.maxW, 0),
           0
         );
-        return total > 0
-          ? Math.min(this.num(p.watts, 7200), total)
-          : this.num(p.watts, 7200);
+        return Math.round(Math.min(this.num(p.watts, 7200), total));
       }
       case 'treadmill':
         return treadmillWatts(p);

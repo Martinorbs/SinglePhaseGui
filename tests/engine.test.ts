@@ -241,6 +241,29 @@ describe('SimulationEngine', () => {
     expect(overview.gridRuntimeSec).toBeNull();
   });
 
+  it('uses the configured induction zone levels for peak power', () => {
+    const engine = makeEngine();
+    allOff(engine);
+    const induction = engine.config.appliances.find(
+      (item) => item.id === 'induction'
+    );
+    const zones = induction?.params.zones ?? [];
+    engine.patchAppliance('induction', {
+      params: {
+        zones: zones.map((zone, index) => ({
+          ...zone,
+          level: index === 0 ? 5 : 0
+        }))
+      }
+    });
+
+    const overview = engine.snapshot().overview;
+
+    expect(overview.peakW).toBe(1100);
+    expect(overview.averageW).toBe(1100);
+    expect(overview.fitsFuse).toBe(true);
+  });
+
   it('compares peak surplus with the fuse and battery output', () => {
     const engine = makeEngine();
     allOff(engine);
