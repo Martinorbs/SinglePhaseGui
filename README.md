@@ -47,23 +47,41 @@ De statische build gebruikt geen API of server: de simulatie-engine draait in de
 browser en bewaren van configuratie en toestand gebeurt in `localStorage` van de
 browser. Iedere bezoeker heeft daardoor een eigen, lokale simulatietoestand.
 
+### Optie 1: GitHub Actions
+
 1. Zet de repository op GitHub en maak in **Settings → Pages** de source
    **GitHub Actions**.
 2. Push naar `main` of `master`. De workflow
    `.github/workflows/deploy.yml` bouwt `dist/client` met
    `npm run build:gh-pages` en publiceert die map.
-3. De base URL wordt automatisch afgeleid uit `GITHUB_REPOSITORY`, dus een site
-   op `https://<gebruiker>.github.io/<repo>/` werkt zonder extra instellingen.
 
-Voor een handmatige lokale test van de statische build:
+### Optie 2: Deploy from a branch
+
+1. Zorg dat de Git-remote `origin` staat (of zet `VITE_BASE`) en bouw de
+   statische site in `docs/`:
+   ```powershell
+   npm run build:pages
+   ```
+2. Commit de gegenereerde `docs/`-map samen met je sourcewijzigingen en push
+   naar GitHub.
+3. Kies in **Settings → Pages** voor **Deploy from a branch**, met branch
+   `main` (of `master`) en map `/docs`.
+
+Herhaal `npm run build:pages` en het committen van `docs/` bij elke wijziging;
+GitHub Pages bouwt de site zelf niet opnieuw. De map `docs/` bevat ook een
+`.nojekyll`-bestand zodat GitHub de bestanden ongewijzigd serveert.
+
+De base URL wordt automatisch afgeleid uit `GITHUB_REPOSITORY`, de
+`origin`-remote of de mapnaam van de repository. Voor een eigen domein of een
+afwijkende map kun je overschrijven
+met `VITE_BASE=/`:
 
 ```powershell
-$env:GITHUB_REPOSITORY = '<gebruiker>/<repo>'
-npm run build:gh-pages
+$env:VITE_BASE = '/'
+npm run build:pages
 ```
 
-Daarna kun je `dist/client` met een willekeurige static file server openen. De
-gewone `npm run build` blijft de versie voor de lokale Node-server maken.
+De gewone `npm run build` blijft de versie voor de lokale Node-server maken.
 
 ## Ontwikkelen
 
@@ -81,7 +99,8 @@ Vite-ontwikkelserver stuurt `/api`-verzoeken door naar de API.
 | `npm run dev` | Server en client met hot reload |
 | `npm start` | Productie-build maken en server starten |
 | `npm run build` | Typecheck en client-build voor de lokale server |
-| `npm run build:gh-pages` | Statische build met project-base-url voor GitHub Pages |
+| `npm run build:gh-pages` | Statische build naar `dist/client` voor GitHub Actions |
+| `npm run build:pages` | Statische build naar `docs/` voor Deploy from a branch |
 | `npm run typecheck` | TypeScript controleren |
 | `npm run lint` | ESLint uitvoeren |
 | `npm test` | Unit-tests uitvoeren |
@@ -162,5 +181,6 @@ server/     Express-API, SSE-stream, persistentie en simulatie-engine
 client/     React-dashboard, componenten en styling
 tests/      Vitest unit-tests
 data/       Lokale configuratie en simulatetoestand (niet in git)
+docs/       Gegenereerde statische site voor Deploy from a branch
 .github/    GitHub Actions workflow voor GitHub Pages
 ```

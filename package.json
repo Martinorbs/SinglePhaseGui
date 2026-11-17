@@ -10,6 +10,7 @@
     "dev:client": "vite",
     "build": "tsc --noEmit && vite build",
     "build:gh-pages": "tsc --noEmit && vite build --mode gh-pages",
+    "build:pages": "tsc --noEmit && vite build --mode gh-pages --outDir ../docs",
     "start": "npm run build && tsx server/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --config vitest.config.ts",
