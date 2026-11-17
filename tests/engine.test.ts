@@ -44,6 +44,9 @@ describe('SimulationEngine', () => {
     expect(snapshot.totals.gridA).toBeLessThanOrEqual(35);
     expect(snapshot.totals.overLimit).toBe(false);
     expect(snapshot.battery.socPct).toBe(100);
+    expect(engine.config.battery.capacityKwh).toBe(6);
+    expect(engine.config.battery.maxChargeKw).toBe(4.5);
+    expect(engine.config.battery.maxDischargeKw).toBe(4.5);
   });
 
   it('uses apparent power and detects an over-limit combination', () => {

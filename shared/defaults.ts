@@ -36,9 +36,9 @@ function appliance(
 export function defaultBattery(): BatteryConfig {
   return {
     enabled: true,
-    capacityKwh: 5,
-    maxChargeKw: 2.5,
-    maxDischargeKw: 2.5,
+    capacityKwh: 6,
+    maxChargeKw: 4.5,
+    maxDischargeKw: 4.5,
     roundTripEfficiency: 0.9,
     initialSocPct: 100,
     assistThresholdA: 35,
